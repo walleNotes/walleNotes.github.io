@@ -4,34 +4,9 @@
   
     
     <entry>
-      <title>2020年更新计划</title>
-      <link href="/2020/02/23/%E9%9A%8F%E7%AC%94/hello-world/"/>
-      <url>/2020/02/23/%E9%9A%8F%E7%AC%94/hello-world/</url>
-      
-        <content type="html"><![CDATA[<blockquote class="blockquote-center"><p>坚持不懈 始终如一</p></blockquote><div class="note info">            <ul><li>每周至少更新一篇文章</li><li>每个月进行一次总结</li></ul>          </div><hr>]]></content>
-      
-      
-      <categories>
-          
-          <category> 随笔 </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> 随笔 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>Go Micro</title>
-      <link href="/2018/03/06/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-001-%E6%A6%82%E8%BF%B0/"/>
-      <url>/2018/03/06/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-001-%E6%A6%82%E8%BF%B0/</url>
+      <title>Go Micro微服务架构概述</title>
+      <link href="/2020/02/23/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-001-%E6%A6%82%E8%BF%B0/"/>
+      <url>/2020/02/23/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-001-%E6%A6%82%E8%BF%B0/</url>
       
         <content type="html"><![CDATA[<blockquote class="blockquote-center"><p>– </p></blockquote><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">set sql_mode&#x3D;&quot;&quot;;</span><br><span class="line">drop table if exists a,b,c,d,e;</span><br><span class="line">create table a(a tinyint, b tinyint, c tinyint, </span><br><span class="line">key(a),key(b),key(c),key(a,b,c),</span><br><span class="line">unique key(b,c),key(c,a,b))engine&#x3D;innodb;</span><br><span class="line">create table b like a;</span><br><span class="line">create table c like a;</span><br><span class="line">create table d like a;</span><br><span class="line">create table e like a;</span><br><span class="line">drop procedure if exists p;</span><br><span class="line">delimiter $</span><br><span class="line">create procedure p()</span><br><span class="line">begin</span><br><span class="line">  declare continue handler for sqlexception begin end;</span><br><span class="line">   repeat</span><br><span class="line">    if rand()&gt;0.2 then start transaction; end if;</span><br><span class="line"></span><br><span class="line">if rand()&gt;0.1 then set @a:&#x3D;floor(rand()*10); end if;</span><br><span class="line">if rand()&gt;0.1 then set @b:&#x3D;floor(rand()*10); end if;</span><br><span class="line">if rand()&gt;0.1 then set @c:&#x3D;floor(rand()*10); end if;</span><br><span class="line"></span><br><span class="line">if rand()&gt;0.5 then replace into a(a,b,c) values(@a,@b,@c); end if;</span><br><span class="line">if rand()&gt;0.5 then replace into b(a,b,c) values(@a,@b,@c); end if;</span><br><span class="line">if rand()&gt;0.5 then replace into c(a,b,c) values(@a,@b,@c); end if;</span><br><span class="line">if rand()&gt;0.5 then replace into d(a,b,c) values(@a,@b,@c); end if;</span><br><span class="line">if rand()&gt;0.5 then replace into e(a,b,c) values(@a,@b,@c); end if;</span><br><span class="line"></span><br><span class="line">if rand()&gt;0.5 then update a set b&#x3D;@a where c&#x3D;@a; end if;</span><br><span class="line">if rand()&gt;0.5 then update b set c&#x3D;@b where a&#x3D;@b; end if;</span><br><span class="line">if rand()&gt;0.5 then update c set d&#x3D;@c where b&#x3D;@c; end if;</span><br><span class="line">if rand()&gt;0.5 then update d set e&#x3D;@d where c&#x3D;@d; end if;</span><br><span class="line">if rand()&gt;0.5 then update e set a&#x3D;@e where d&#x3D;@e; end if;</span><br><span class="line"></span><br><span class="line">if rand()&gt;0.5 then delete from a where a&#x3D;@a; end if;</span><br><span class="line">if rand()&gt;0.5 then delete from b where b&#x3D;@b; end if;</span><br><span class="line">if rand()&gt;0.5 then delete from c where c&#x3D;@c; end if;</span><br><span class="line">if rand()&gt;0.5 then delete from d where a&#x3D;@d; end if;</span><br><span class="line">if rand()&gt;0.5 then delete from e where b&#x3D;@c; end if;</span><br><span class="line"></span><br><span class="line">if rand()&gt;0.2 then commit; end if;</span><br><span class="line">   until rand()&gt;0.9 end repeat;</span><br><span class="line">end $</span><br><span class="line">delimiter ;</span><br><span class="line"></span><br><span class="line">call p();</span><br></pre></td></tr></table></figure><p>this is a test.</p>]]></content>
       
@@ -54,6 +29,33 @@
             <tag> Go </tag>
             
             <tag> 微服务 </tag>
+            
+            <tag> 架构 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>2020年更新计划</title>
+      <link href="/2020/02/23/%E9%9A%8F%E7%AC%94/hello-2020/"/>
+      <url>/2020/02/23/%E9%9A%8F%E7%AC%94/hello-2020/</url>
+      
+        <content type="html"><![CDATA[<blockquote class="blockquote-center"><p>坚持不懈 始终如一</p></blockquote><div class="note info">            <ul><li>研究go-micro微服务架构</li><li>研究ClickHouse</li><li>MySQL 8.0上线</li><li>MongoDB 4.2上线</li><li>Codis上云</li></ul>          </div><hr>]]></content>
+      
+      
+      <categories>
+          
+          <category> 随笔 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 随笔 </tag>
             
         </tags>
       
@@ -80,7 +82,9 @@
       
         <tags>
             
-            <tag> Compile </tag>
+            <tag> 编译 </tag>
+            
+            <tag> 链接 </tag>
             
         </tags>
       
@@ -107,9 +111,9 @@
       
         <tags>
             
-            <tag> memory </tag>
+            <tag> 内存 </tag>
             
-            <tag> linux </tag>
+            <tag> Linux </tag>
             
         </tags>
       
