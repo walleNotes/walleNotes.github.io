@@ -186,7 +186,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="https://github.com/FortAwesome/Font-Awesome.git/2020/02/23/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-001-%E6%A6%82%E8%BF%B0/">
+    <link itemprop="mainEntityOfPage" href="https://github.com/FortAwesome/Font-Awesome.git/2020/02/25/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-001-%E6%A6%82%E8%BF%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.png">
@@ -200,7 +200,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/02/23/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-001-%E6%A6%82%E8%BF%B0/" class="post-title-link" itemprop="url">Go Micro微服务架构概述</a>
+            <a href="/2020/02/25/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-001-%E6%A6%82%E8%BF%B0/" class="post-title-link" itemprop="url">Go Micro微服务架构概述</a>
         </h1>
 
         <div class="post-meta">
@@ -209,10 +209,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-02-23 16:57:31 / 修改时间：18:09:23" itemprop="dateCreated datePublished" datetime="2020-02-23T16:57:31+08:00">2020-02-23</time>
+              <time title="创建时间：2020-02-25 20:57:31" itemprop="dateCreated datePublished" datetime="2020-02-25T20:57:31+08:00">2020-02-25</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-02-28 21:10:21" itemprop="dateModified" datetime="2020-02-28T21:10:21+08:00">2020-02-28</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -248,12 +254,22 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <blockquote class="blockquote-center"><p>– </p>
+          <blockquote class="blockquote-center"><p>A Go microservices development framework  </p>
 </blockquote>
 
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">set sql_mode&#x3D;&quot;&quot;;</span><br><span class="line">drop table if exists a,b,c,d,e;</span><br><span class="line">create table a(a tinyint, b tinyint, c tinyint, </span><br><span class="line">key(a),key(b),key(c),key(a,b,c),</span><br><span class="line">unique key(b,c),key(c,a,b))engine&#x3D;innodb;</span><br><span class="line">create table b like a;</span><br><span class="line">create table c like a;</span><br><span class="line">create table d like a;</span><br><span class="line">create table e like a;</span><br><span class="line">drop procedure if exists p;</span><br><span class="line">delimiter $</span><br><span class="line">create procedure p()</span><br><span class="line">begin</span><br><span class="line">  declare continue handler for sqlexception begin end;</span><br><span class="line">   repeat</span><br><span class="line">    if rand()&gt;0.2 then start transaction; end if;</span><br><span class="line"></span><br><span class="line">	if rand()&gt;0.1 then set @a:&#x3D;floor(rand()*10); end if;</span><br><span class="line">	if rand()&gt;0.1 then set @b:&#x3D;floor(rand()*10); end if;</span><br><span class="line">	if rand()&gt;0.1 then set @c:&#x3D;floor(rand()*10); end if;</span><br><span class="line">	</span><br><span class="line">	if rand()&gt;0.5 then replace into a(a,b,c) values(@a,@b,@c); end if;</span><br><span class="line">	if rand()&gt;0.5 then replace into b(a,b,c) values(@a,@b,@c); end if;</span><br><span class="line">	if rand()&gt;0.5 then replace into c(a,b,c) values(@a,@b,@c); end if;</span><br><span class="line">	if rand()&gt;0.5 then replace into d(a,b,c) values(@a,@b,@c); end if;</span><br><span class="line">	if rand()&gt;0.5 then replace into e(a,b,c) values(@a,@b,@c); end if;</span><br><span class="line">	</span><br><span class="line">	if rand()&gt;0.5 then update a set b&#x3D;@a where c&#x3D;@a; end if;</span><br><span class="line">	if rand()&gt;0.5 then update b set c&#x3D;@b where a&#x3D;@b; end if;</span><br><span class="line">	if rand()&gt;0.5 then update c set d&#x3D;@c where b&#x3D;@c; end if;</span><br><span class="line">	if rand()&gt;0.5 then update d set e&#x3D;@d where c&#x3D;@d; end if;</span><br><span class="line">	if rand()&gt;0.5 then update e set a&#x3D;@e where d&#x3D;@e; end if;</span><br><span class="line">	</span><br><span class="line">	if rand()&gt;0.5 then delete from a where a&#x3D;@a; end if;</span><br><span class="line">	if rand()&gt;0.5 then delete from b where b&#x3D;@b; end if;</span><br><span class="line">	if rand()&gt;0.5 then delete from c where c&#x3D;@c; end if;</span><br><span class="line">	if rand()&gt;0.5 then delete from d where a&#x3D;@d; end if;</span><br><span class="line">	if rand()&gt;0.5 then delete from e where b&#x3D;@c; end if;</span><br><span class="line">	</span><br><span class="line">	if rand()&gt;0.2 then commit; end if;</span><br><span class="line">   until rand()&gt;0.9 end repeat;</span><br><span class="line">end $</span><br><span class="line">delimiter ;</span><br><span class="line"></span><br><span class="line">call p();</span><br></pre></td></tr></table></figure>
-<p>this is a test.</p>
 
+<h1 id="总览"><a href="#总览" class="headerlink" title="总览"></a>总览</h1><p>提供的主要软件是Micro ，一个微服务开发运行时。</p>
+<blockquote>
+<p>Micro 解决了构建微服务系统的关键需求。 它采用微服务架构模式并将其转换为一组工具，这些工具充当可伸缩平台的构建块。Micro隐藏了分布式系统的复杂性，并为开发人员提供了易于理解的概念。</p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/02/25/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-001-%E6%A6%82%E8%BF%B0/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
