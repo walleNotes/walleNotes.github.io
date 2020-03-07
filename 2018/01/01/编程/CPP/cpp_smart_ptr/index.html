@@ -26,6 +26,8 @@
 <meta property="og:url" content="https://github.com/FortAwesome/Font-Awesome.git/2018/01/01/%E7%BC%96%E7%A8%8B/CPP/cpp_smart_ptr/index.html">
 <meta property="og:site_name" content="walle&#39;s Notes">
 <meta property="og:description" content="他山之石 可以攻玉 – 《诗经·小雅·鹤鸣》   Smart Pointer 引入原因使用 Raw Pointer 管理动态内存时，经常会遇到这样的问题：  忘记delete内存，造成内存泄露 出现异常时，不会执行delete，造成内存泄露  下面的代码解释了，当一个操作发生异常时，会导致delete不会被执行： 1234567void func() &amp;#123;    auto ptr &#x3D; ne">
+<meta property="og:image" content="https://github.com/2018/01/01/%E7%BC%96%E7%A8%8B/CPP/cpp_smart_ptr/unique_ptr.png">
+<meta property="og:image" content="https://github.com/2018/01/01/%E7%BC%96%E7%A8%8B/CPP/cpp_smart_ptr/shared_ptr.png">
 <meta property="article:published_time" content="2018-01-01T13:46:31.000Z">
 <meta property="article:modified_time" content="2020-02-23T10:08:19.090Z">
 <meta property="article:author" content="Eter">
@@ -33,6 +35,7 @@
 <meta property="article:tag" content="CPP">
 <meta property="article:tag" content="Smart Pointers">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/2018/01/01/%E7%BC%96%E7%A8%8B/CPP/cpp_smart_ptr/unique_ptr.png">
 
 <link rel="canonical" href="https://github.com/FortAwesome/Font-Awesome.git/2018/01/01/%E7%BC%96%E7%A8%8B/CPP/cpp_smart_ptr/">
 
@@ -215,13 +218,6 @@
 
               <time title="创建时间：2018-01-01 21:46:31" itemprop="dateCreated datePublished" datetime="2018-01-01T21:46:31+08:00">2018-01-01</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-02-23 18:08:19" itemprop="dateModified" datetime="2020-02-23T18:08:19+08:00">2020-02-23</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -315,7 +311,7 @@
 </ul>
 <h2 id="创建和使用unique-ptr实例"><a href="#创建和使用unique-ptr实例" class="headerlink" title="创建和使用unique_ptr实例"></a>创建和使用unique_ptr实例</h2><p>A unique_ptr不会共享它的指针。 无法将它复制到另一个unique_ptr，（除非它是可修改rvalue） 通过值传递给函数，或需要对其进行复制的任何标准模板库 (STL) 算法中使用。 A unique_ptr只能移动。 这意味着内存资源的所有权将转移到新的unique_ptr和原始unique_ptr不再拥有它。 我们建议您将一个对象限制为一个所有者，因为拥有多个程序逻辑增加复杂性。 因此，当您需要为普通的 C++ 对象的 Smart Pointer ，使用unique_ptr。</p>
 <p>下图说明了两个转让所有权unique_ptr实例。</p>
-
+<img src="/2018/01/01/%E7%BC%96%E7%A8%8B/CPP/cpp_smart_ptr/unique_ptr.png" class="" title="unique_ptr">
 
 <p>移动 unique_ptr 的所有权, unique_ptr在中定义<memory> STL 中的标头。 它是完全有效与 Raw Pointer ，可以使用 STL 容器中。 添加unique_ptr是有效的实例的 STL 容器因为移动构造函数的unique_ptr不需要复制操作。</p>
 <p>** 示例 **<br>下面的示例演示如何创建unique_ptr实例，并在函数之间传递它们。</p>
@@ -335,7 +331,7 @@
 
 <h2 id="创建和使用shared-ptr实例"><a href="#创建和使用shared-ptr实例" class="headerlink" title="创建和使用shared_ptr实例"></a>创建和使用shared_ptr实例</h2><p>shared_ptr 类型是 Smart Pointer 在为方案设计多个所有者可能必须管理对象生存期内存中的 C++ 标准库中。 在初始化可以将它复制的 shared_ptr 后，将它在函数参数的值，并将其分配给其他 shared_ptr 实例。 所有实例指向同一对象，并且，对“的共享访问控制块”该引用计数的增量和减量，每当新 shared_ptr 添加，超出范围或重新设置。 当引用计数达到零时，控制块删除内存资源和自身。</p>
 <p>下图显示了指向个内存位置的几 shared_ptr 实例。</p>
-
+<img src="/2018/01/01/%E7%BC%96%E7%A8%8B/CPP/cpp_smart_ptr/shared_ptr.png" class="" title="shared_ptr">
 
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Created by Eter J on 2017/12/31.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;memory&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span> &#123;</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">shared_ptr</span>&lt;C&gt; gp;</span><br><span class="line">    &#123;</span><br><span class="line">        C* ptr = <span class="keyword">new</span> C;</span><br><span class="line">        <span class="function"><span class="built_in">shared_ptr</span>&lt;C&gt; <span class="title">sp</span><span class="params">(ptr)</span></span>;</span><br><span class="line">        gp = sp ;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"sp.use_count(): "</span> &lt;&lt; sp.use_count() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"gp.use_count(): "</span> &lt;&lt; gp.use_count() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"gp.use_count(): "</span> &lt;&lt; gp.use_count() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>OUTPUT:</p>
@@ -450,20 +446,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -484,6 +480,29 @@
   </div>
 
 
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://golang.org/doc/effective_go.html" title="https:&#x2F;&#x2F;golang.org&#x2F;doc&#x2F;effective_go.html" rel="noopener" target="_blank">Effective Go</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://blog.golang.org/profiling-go-programs" title="https:&#x2F;&#x2F;blog.golang.org&#x2F;profiling-go-programs" rel="noopener" target="_blank">Profiling Go Programs</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://doc.rust-lang.org/book/" title="https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;book&#x2F;" rel="noopener" target="_blank">The Rust Programming Language</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://csoulsi.github.io/" title="https:&#x2F;&#x2F;csoulsi.github.io" rel="noopener" target="_blank">csoulsi</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://schnappi618.github.io/" title="https:&#x2F;&#x2F;schnappi618.github.io&#x2F;" rel="noopener" target="_blank">schnappi618</a>
+        </li>
+    </ul>
+  </div>
 
       </div>
 
@@ -494,7 +513,7 @@
           <h3 class="widget-title">Tag Cloud</h3>
           <div id="myCanvasContainer" class="widget tagcloud">
             <canvas width="250" height="250" id="resCanvas" style="width:100%">
-              <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CPP/" rel="tag">CPP</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/" rel="tag">Go</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go-Micro/" rel="tag">Go Micro</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Smart-Pointers/" rel="tag">Smart Pointers</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%86%85%E5%AD%98/" rel="tag">内存</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="tag">微服务</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9E%B6%E6%9E%84/" rel="tag">架构</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B/" rel="tag">编程</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E8%AF%91/" rel="tag">编译</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E6%8E%A5/" rel="tag">链接</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">1</span></li></ul>
+              <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CPP/" rel="tag">CPP</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go/" rel="tag">Go</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Go-Micro/" rel="tag">Go Micro</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Smart-Pointers/" rel="tag">Smart Pointers</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TiDB/" rel="tag">TiDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%86%85%E5%AD%98/" rel="tag">内存</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="tag">微服务</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9E%B6%E6%9E%84/" rel="tag">架构</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B/" rel="tag">编程</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E8%AF%91/" rel="tag">编译</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E6%8E%A5/" rel="tag">链接</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">1</span></li></ul>
             </canvas>
           </div>
         </div>
