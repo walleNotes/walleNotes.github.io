@@ -139,8 +139,8 @@
     
     <entry>
       <title>2020年更新计划</title>
-      <link href="/2020/02/23/%E9%9A%8F%E7%AC%94/hello-2020/"/>
-      <url>/2020/02/23/%E9%9A%8F%E7%AC%94/hello-2020/</url>
+      <link href="/2020/02/01/%E9%9A%8F%E7%AC%94/hello-2020/"/>
+      <url>/2020/02/01/%E9%9A%8F%E7%AC%94/hello-2020/</url>
       
         <content type="html"><![CDATA[<blockquote class="blockquote-center"><p>坚持不懈 始终如一</p></blockquote><div class="note info">            <ul><li>研究go-micro微服务架构</li><li>研究ClickHouse</li><li>MySQL 8.0上线</li><li>MongoDB 4.2上线</li><li>Codis上云</li></ul>          </div><hr>]]></content>
       
