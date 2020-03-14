@@ -4,6 +4,76 @@
   
     
     <entry>
+      <title>Go Micro微服务架构 - 快速上手</title>
+      <link href="/2020/03/14/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-003/"/>
+      <url>/2020/03/14/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-003/</url>
+      
+        <content type="html"><![CDATA[<blockquote class="blockquote-center"><p>A Go microservices development framework  </p></blockquote><h1 id="快速上手"><a href="#快速上手" class="headerlink" title="快速上手"></a>快速上手</h1><ul><li>依赖</li><li>安装</li><li>编写服务</li></ul><a id="more"></a><h2 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h2><p><strong>Protobuf</strong></p><p>代码生成依赖 Protobuf , 安装示例:</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go get github.com/micro/protoc-gen-micro/v2</span><br></pre></td></tr></table></figure><p><strong>Discovery</strong></p><p>推荐使用 etcd 作为注册中心。</p><p><strong>etcd</strong></p><p>单机部署参考 Dockerfile, 安装示例:</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">FROM k8s.gcr.io/debian-base:v1.0.0</span><br><span class="line"></span><br><span class="line">ADD etcd /usr/<span class="built_in">local</span>/bin/</span><br><span class="line">ADD etcdctl /usr/<span class="built_in">local</span>/bin/</span><br><span class="line">RUN mkdir -p /var/etcd/</span><br><span class="line">RUN mkdir -p /var/lib/etcd/</span><br><span class="line"></span><br><span class="line"><span class="comment"># Alpine Linux doesn't use pam, which means that there is no /etc/nsswitch.conf,</span></span><br><span class="line"><span class="comment"># but Golang relies on /etc/nsswitch.conf to check the order of DNS resolving</span></span><br><span class="line"><span class="comment"># (see https://github.com/golang/go/commit/9dee7771f561cf6aee081c0af6658cc81fac3918)</span></span><br><span class="line"><span class="comment"># To fix this we just create /etc/nsswitch.conf and add the following line:</span></span><br><span class="line">RUN <span class="built_in">echo</span> <span class="string">'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4'</span> &gt;&gt; /etc/nsswitch.conf</span><br><span class="line"></span><br><span class="line">EXPOSE 2379 2380</span><br><span class="line"></span><br><span class="line"><span class="comment"># Define default command.</span></span><br><span class="line">CMD [<span class="string">"/usr/local/bin/etcd"</span>]</span><br></pre></td></tr></table></figure><p>使用当前目录作为上下文的构建命令:</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build .</span><br></pre></td></tr></table></figure><h2 id="安装-go-micro"><a href="#安装-go-micro" class="headerlink" title="安装 go-micro"></a>安装 go-micro</h2><p>Go Micro是用于基于Go的开发的框架。</p><p>服务中导入 go-micro 示例：</p><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">"github.com/micro/go-micro/v2"</span></span><br></pre></td></tr></table></figure><p>建议开启 go mod，并通过 go mod 启用改功能。</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># enable go modules</span></span><br><span class="line"><span class="built_in">export</span> GO111MODULE=on</span><br><span class="line"><span class="comment"># initialise go modules in your app</span></span><br><span class="line">go mod init</span><br><span class="line"><span class="comment"># now go get</span></span><br><span class="line">go get ./...</span><br></pre></td></tr></table></figure><h2 id="编写服务"><a href="#编写服务" class="headerlink" title="编写服务"></a>编写服务</h2><p>按照惯例，使用 go-micro 编写一个 helloworld服务，以下是具体步骤。</p><ul><li>服务原型</li><li>生成原型</li><li>编写服务</li><li>运行服务</li><li>定义客户端</li><li>运行客户端</li></ul><blockquote><p>以下操作均在 helloworld 目录下进行。</p></blockquote><h3 id="服务原型"><a href="#服务原型" class="headerlink" title="服务原型"></a>服务原型</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">syntax &#x3D; &quot;proto3&quot;;</span><br><span class="line"></span><br><span class="line">service Greeter &#123;</span><br><span class="line">rpc Hello(HelloRequest) returns (HelloResponse) &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message HelloRequest &#123;</span><br><span class="line">string name &#x3D; 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message HelloResponse &#123;</span><br><span class="line">string greeting &#x3D; 2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h3 id="生成原型"><a href="#生成原型" class="headerlink" title="生成原型"></a>生成原型</h3><h3 id="编写服务-1"><a href="#编写服务-1" class="headerlink" title="编写服务"></a>编写服务</h3><h3 id="运行服务"><a href="#运行服务" class="headerlink" title="运行服务"></a>运行服务</h3><h3 id="定义客户端"><a href="#定义客户端" class="headerlink" title="定义客户端"></a>定义客户端</h3><h3 id="运行客户端"><a href="#运行客户端" class="headerlink" title="运行客户端"></a>运行客户端</h3>]]></content>
+      
+      
+      <categories>
+          
+          <category> 架构 </category>
+          
+          <category> 微服务 </category>
+          
+          <category> go-micro </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Go Micro </tag>
+            
+            <tag> Go </tag>
+            
+            <tag> 微服务 </tag>
+            
+            <tag> 架构 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Go Micro微服务架构特性</title>
+      <link href="/2020/03/14/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-002/"/>
+      <url>/2020/03/14/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-002/</url>
+      
+        <content type="html"><![CDATA[<blockquote class="blockquote-center"><p>A Go microservices development framework  </p></blockquote><h2 id="总览"><a href="#总览" class="headerlink" title="总览"></a>总览</h2><p>Go Micro 是微服务开发的框架。</p><blockquote><p>Go Micro 提供了分布式系统开发的核心要求，包括 RPC 和事件驱动的通信。 微哲学是可插拔体系结构的默认设置。 我们提供了默认设置，可帮助您快速入门，但所有内容都可以轻松换出。</p></blockquote><a id="more"></a><h2 id="特征"><a href="#特征" class="headerlink" title="特征"></a>特征</h2><p>Go Micro 主要功能：</p><ul><li><p>服务发现（Service Discovery）- 自动服务注册和名称解析，服务发现是微服务开发的核心。 当服务A需要与服务B通信时，它需要该服务的位置。 默认发现机制是多播 DNS（mdns），一种零配置系统，推荐使用 etcd 。</p></li><li><p>负载平衡（Load Balancing）- 基于服务发现的客户端负载平衡。 当获得了服务的任意数量的实例的地址，我们现在需要一种方法来确定要路由到的节点。 我们使用随机散列负载平衡来提供服务之间的平均分配，并在出现问题时重试其他节点。</p></li><li><p>消息编码 （Message Encoding）- 基于内容类型的动态消息编码。 客户端和服务端会一起使用content-type的格式来对Go进行无缝编/解码。各种各样的消息被编码会发送到不同的客户端，客户端服服务端默认会处理这些消息。 默认情况下，包括protobuf 和 json 。</p></li><li><p>请求/响应 (Request/Response) - 基于 RPC 的请求/响应，支持双向流。 我们为同步通信提供了一个抽象。 对服务的请求将被自动解决，负载均衡，拨号和流式传输。 默认传输方式是gRPC 。</p></li><li><p>异步消息传递（Async Messaging） - 发布订阅（PubSub）头等功能内置在异步通信与事件驱动架构中。事件通知在微服务开发中处于核心位置。默认的消息传送使用点到点http/1.1，激活tls时则使用http2。</p></li><li><p>可插拔接口（Pluggable Interfaces）- Go Micro对每个分布式系统抽象都使用Go接口。 因此，这些接口是可插入的，并允许Go Micro与运行时无关。 您可以插入任何基础技术。 在github.com/micro/go-plugins中找到插件。</p></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 架构 </category>
+          
+          <category> 微服务 </category>
+          
+          <category> go-micro </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Go Micro </tag>
+            
+            <tag> Go </tag>
+            
+            <tag> 微服务 </tag>
+            
+            <tag> 架构 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>TiKV is busy 处理思路</title>
       <link href="/2020/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/TiDB/tikv-is-busy/"/>
       <url>/2020/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/TiDB/tikv-is-busy/</url>
@@ -33,11 +103,11 @@
     
     
     <entry>
-      <title>Go Micro微服务架构概述</title>
+      <title>Go Micro微服务架构组成</title>
       <link href="/2020/02/25/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-001/"/>
       <url>/2020/02/25/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-001/</url>
       
-        <content type="html"><![CDATA[<blockquote class="blockquote-center"><p>A Go microservices development framework  </p></blockquote><h1 id="总览"><a href="#总览" class="headerlink" title="总览"></a>总览</h1><p>提供的主要软件是Micro ，一个微服务开发运行时。</p><blockquote><p>Micro 解决了构建微服务系统的关键需求。 它采用微服务架构模式并将其转换为一组工具，这些工具充当可伸缩平台的构建块。Micro隐藏了分布式系统的复杂性，并为开发人员提供了易于理解的概念。</p></blockquote><a id="more"></a><h1 id="特征"><a href="#特征" class="headerlink" title="特征"></a>特征</h1><p>运行时由以下功能组成：</p><img src="/2020/02/25/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-001/micro-001-01.png" class="" title="[1] micro运行时提供的功能"><h2 id="api"><a href="#api" class="headerlink" title="api"></a>api</h2><p>一个api网关。 使用服务发现进行动态请求路由的单个入口点。 API网关使您可以在后端构建可扩展的微服务架构，并在前端整合服务公共api的服务。 微型api通过发现和可插入处理程序提供强大的路由，以服务http，grpc，websocket，发布事件等。</p><h2 id="bot"><a href="#bot" class="headerlink" title="bot"></a>bot</h2><p>在您的平台上运行的slackbot，可让您从Slack本身管理应用程序。 微型机器人启用了ChatOps，并使您能够通过消息与团队一起完成所有工作。 它还具有将松弛命令创建为动态发现的服务的功能。</p><h2 id="cli"><a href="#cli" class="headerlink" title="cli"></a>cli</h2><p>交互式CLI，用于从终端描述，查询和直接与您的平台和服务交互。 CLI为您提供了您希望了解微服务正在发生的所有命令。 它还包括一个交互模式。</p><h2 id="network"><a href="#network" class="headerlink" title="network"></a>network</h2><p>使用微网络服务构建多云网络。 只需插入并连接任何环境中的网络服务，并创建一个单一的扁平网络即可进行全球路由。 微型网络会根据您在每个数据中心中的本地注册表动态地构建路由，以确保查询是根据位置进行路由的。</p><h2 id="new"><a href="#new" class="headerlink" title="new"></a>new</h2><p>服务模板生成器。 创建新的服务模板以快速入门。 Micro提供了用于编写微服务的预定义模板。 始终以相同的方式开始，构建相同的服务以提高生产力。</p><h2 id="proxy"><a href="#proxy" class="headerlink" title="proxy"></a>proxy</h2><p>基于Go Micro构建的透明服务代理。 将服务发现，负载平衡，容错，消息编码，中间件，监视等卸载到一个位置。 独立运行它或与您的服务一起运行。</p><h2 id="tunnel"><a href="#tunnel" class="headerlink" title="tunnel"></a>tunnel</h2><p>无需任何VPN即可在任何环境中访问服务的网络隧道。 微隧道通过内置代理提供点对点隧道，以查询远程环境中的服务。 从本地笔记本电脑查询生产系统。</p><h2 id="web"><a href="#web" class="headerlink" title="web"></a>web</h2><p>Web仪表板使您可以浏览服务，描述其端点，请求和响应格式，甚至直接查询它们。 仪表板还包括内置的CLI（类似CLI），适用于希望即时进入终端的开发人员。</p><p>另外，micro提供了Go开发框架：</p><h2 id="go-micro"><a href="#go-micro" class="headerlink" title="go-micro"></a>go-micro</h2><p>利用强大的Go Micro框架轻松快速地开发微服务。Go Micro消除了分布式系统的复杂性，并提供了更简单的抽象来构建高度可扩展的微服务。</p>]]></content>
+        <content type="html"><![CDATA[<blockquote class="blockquote-center"><p>A Go microservices development framework  </p></blockquote><h2 id="总览"><a href="#总览" class="headerlink" title="总览"></a>总览</h2><p>提供的主要软件是Micro ，一个微服务开发运行时。</p><blockquote><p>Micro 解决了构建微服务系统的关键需求。 它采用微服务架构模式并将其转换为一组工具，这些工具充当可伸缩平台的构建块。Micro隐藏了分布式系统的复杂性，并为开发人员提供了易于理解的概念。</p></blockquote><a id="more"></a><h2 id="特征"><a href="#特征" class="headerlink" title="特征"></a>特征</h2><p>运行时由以下功能组成：</p><img src="/2020/02/25/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-001/micro-001-01.png" class="" title="[1] micro运行时提供的功能"><h3 id="api"><a href="#api" class="headerlink" title="api"></a>api</h3><p>一个api网关。 使用服务发现进行动态请求路由的单个入口点。 API网关使您可以在后端构建可扩展的微服务架构，并在前端整合服务公共api的服务。 微型api通过发现和可插入处理程序提供强大的路由，以服务http，grpc，websocket，发布事件等。</p><h3 id="bot"><a href="#bot" class="headerlink" title="bot"></a>bot</h3><p>在您的平台上运行的slackbot，可让您从Slack本身管理应用程序。 微型机器人启用了ChatOps，并使您能够通过消息与团队一起完成所有工作。 它还具有将松弛命令创建为动态发现的服务的功能。</p><h3 id="cli"><a href="#cli" class="headerlink" title="cli"></a>cli</h3><p>交互式CLI，用于从终端描述，查询和直接与您的平台和服务交互。 CLI为您提供了您希望了解微服务正在发生的所有命令。 它还包括一个交互模式。</p><h3 id="network"><a href="#network" class="headerlink" title="network"></a>network</h3><p>使用微网络服务构建多云网络。 只需插入并连接任何环境中的网络服务，并创建一个单一的扁平网络即可进行全球路由。 微型网络会根据您在每个数据中心中的本地注册表动态地构建路由，以确保查询是根据位置进行路由的。</p><h3 id="new"><a href="#new" class="headerlink" title="new"></a>new</h3><p>服务模板生成器。 创建新的服务模板以快速入门。 Micro提供了用于编写微服务的预定义模板。 始终以相同的方式开始，构建相同的服务以提高生产力。</p><h3 id="proxy"><a href="#proxy" class="headerlink" title="proxy"></a>proxy</h3><p>基于Go Micro构建的透明服务代理。 将服务发现，负载平衡，容错，消息编码，中间件，监视等卸载到一个位置。 独立运行它或与您的服务一起运行。</p><h3 id="tunnel"><a href="#tunnel" class="headerlink" title="tunnel"></a>tunnel</h3><p>无需任何VPN即可在任何环境中访问服务的网络隧道。 微隧道通过内置代理提供点对点隧道，以查询远程环境中的服务。 从本地笔记本电脑查询生产系统。</p><h3 id="web"><a href="#web" class="headerlink" title="web"></a>web</h3><p>Web仪表板使您可以浏览服务，描述其端点，请求和响应格式，甚至直接查询它们。 仪表板还包括内置的CLI（类似CLI），适用于希望即时进入终端的开发人员。</p><p>另外，micro提供了Go开发框架：</p><h3 id="go-micro"><a href="#go-micro" class="headerlink" title="go-micro"></a>go-micro</h3><p>利用强大的Go Micro框架轻松快速地开发微服务。Go Micro消除了分布式系统的复杂性，并提供了更简单的抽象来构建高度可扩展的微服务。</p>]]></content>
       
       
       <categories>
