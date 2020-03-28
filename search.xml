@@ -4,6 +4,41 @@
   
     
     <entry>
+      <title>M3O - 微服务的设计模式</title>
+      <link href="/2020/03/28/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-004/"/>
+      <url>/2020/03/28/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-004/</url>
+      
+        <content type="html"><![CDATA[<blockquote class="blockquote-center"><p>M3O is a serverless microservices platform </p></blockquote><h1 id="关于-Micro"><a href="#关于-Micro" class="headerlink" title="关于 Micro"></a>关于 Micro</h1><p>Micro 是一个微服务工具组件。 它的功能和接口值得一看，同时提供了强大的可插拔体系结构。</p><p>Micro 专注于满足构建微服务的基本要求，并希望通过采取谨慎的设计方法来做到这一点。</p><p>关于Micro 工具组件的介绍，可以参考之前文章阅读。</p><ul><li><a href="https://wallenotes.github.io/2020/02/25/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-001/" target="_blank" rel="noopener" title="Go Micro微服务架构组成">Go Micro微服务架构组成</a></li><li><a href="https://wallenotes.github.io/2020/03/14/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-002/" target="_blank" rel="noopener" title="Go Micro微服务架构特性">Go Micro微服务架构特性</a></li></ul><p>这就是快速回顾，现在让我们更深入。</p><a id="more"></a><h2 id="RPC，REST，Proto-…"><a href="#RPC，REST，Proto-…" class="headerlink" title="RPC，REST，Proto …"></a>RPC，REST，Proto …</h2><ul><li>首先想到的是服务间通信为什么使用的是 RPC? 为什么不使用 REST？ </li><li>为什么要使用 protobuf 编码？</li></ul><p>Google 是 protobuf 的创建者，内部使用 RPC，以及其开源的 gRPC（RPC框架）。很多的大公司都是 RPC/Protobuf 坚定拥护者，例如 Uber、FB、Tw等。</p><p>站在巨人的肩膀上，我们并不孤单。</p><p>就个人而言，我们认为，未来的 API 会使用 RPC 构建，因为它们定义良好的结构化格式，易于与有效的编码协议（例如 protobuf ）结合使用，并提供强大定义的 API 和高效的通信功能。</p><h2 id="HTTP-到-RPC-API-…"><a href="#HTTP-到-RPC-API-…" class="headerlink" title="HTTP 到 RPC / API …"></a>HTTP 到 RPC / API …</h2><p>从现实的角度来讲，要是实现 RPC On Web，我们还有很长的路要走。 虽然它在数据中心内部是完美的，但是让它服务于公众流量(例如: web网站/ 移动服务)，那就是另外一回事了。这是 micro 包含 API 网关来服务和转换 HTTP 请求的原因之一。</p><p>API 网关是用于微服务架构的模式。 它充当外界的单一入口点，并根据请求路由到适当的服务。 这允许 HTTP API 本身由不同的微服务组成。</p><p>这是一种强大的架构模式。 对 API 的一部分进行更改可能会破坏整个依赖链上服务的日子已经一去不复返了。</p><h3 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h3><p>这是一个例子，对 /customer/orders 的请求将通过方法 Customer.Orders 发送到API服务 go.micro.api.customer 。</p><img src="/2020/03/28/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-004/api.png" class="" title="micro运行时提供的功能">]]></content>
+      
+      
+      <categories>
+          
+          <category> 架构 </category>
+          
+          <category> 微服务 </category>
+          
+          <category> go-micro </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Go Micro </tag>
+            
+            <tag> Go </tag>
+            
+            <tag> 微服务 </tag>
+            
+            <tag> 架构 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Go Micro微服务架构 - 快速上手</title>
       <link href="/2020/03/22/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-003/"/>
       <url>/2020/03/22/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-003/</url>
