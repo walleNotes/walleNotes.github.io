@@ -21,16 +21,16 @@
     var CONFIG = {"hostname":"github.com","root":"/","scheme":"Gemini","version":"7.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":"ture"},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="认识自己的无知是认识世界的最可靠的方法 –《随笔集》    &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;一个程序的的生命周期从编写源代码开始，在编写完源代码之后，就可以进行代码的构建了。其中第一步就是编译,编译阶段会生成各文件的目标文件，将生成的目标文件和系统库文件进行链接，最终生成了可以在特定平台运行的可执行文件。最后操作系统装载器会加载、解包这些数据，并将这些数据用">
+  <meta name="description" content="本文主要讲解编写完源代码之后，是如何生成可执行文件的。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="编译和链接">
 <meta property="og:url" content="https://github.com/walleNotes/wallenotes.github.io.git/2018/01/08/%E7%BC%96%E7%A8%8B/%E7%BC%96%E8%AF%91/compile-and-link/index.html">
 <meta property="og:site_name" content="walle&#39;s Notes">
-<meta property="og:description" content="认识自己的无知是认识世界的最可靠的方法 –《随笔集》    &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;一个程序的的生命周期从编写源代码开始，在编写完源代码之后，就可以进行代码的构建了。其中第一步就是编译,编译阶段会生成各文件的目标文件，将生成的目标文件和系统库文件进行链接，最终生成了可以在特定平台运行的可执行文件。最后操作系统装载器会加载、解包这些数据，并将这些数据用">
+<meta property="og:description" content="本文主要讲解编写完源代码之后，是如何生成可执行文件的。">
 <meta property="og:image" content="https://github.com/2018/01/08/%E7%BC%96%E7%A8%8B/%E7%BC%96%E8%AF%91/compile-and-link/link-01.png">
 <meta property="og:image" content="https://github.com/2018/01/08/%E7%BC%96%E7%A8%8B/%E7%BC%96%E8%AF%91/compile-and-link/link-02.png">
 <meta property="article:published_time" content="2018-01-08T09:45:30.000Z">
-<meta property="article:modified_time" content="2020-02-23T10:08:52.406Z">
+<meta property="article:modified_time" content="2020-04-05T14:38:09.352Z">
 <meta property="article:author" content="Eter">
 <meta property="article:tag" content="编译">
 <meta property="article:tag" content="链接">
@@ -132,7 +132,7 @@
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">11</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">12</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
@@ -261,14 +261,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <blockquote class="blockquote-center"><p>认识自己的无知是认识世界的最可靠的方法 –《随笔集》 </p>
+        <blockquote class="blockquote-center"><p>本文主要讲解编写完源代码之后，是如何生成可执行文件的。 </p>
 </blockquote>
 
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;一个程序的的生命周期从编写源代码开始，在编写完源代码之后，就可以进行代码的构建了。其中第一步就是编译,编译阶段会生成各文件的目标文件，将生成的目标文件和系统库文件进行链接，最终生成了可以在特定平台运行的可执行文件。最后操作系统装载器会加载、解包这些数据，并将这些数据用于程序的执行阶段。</p>
+<a id="more"></a>
+
+<p>一个程序的的生命周期从编写源代码开始，在编写完源代码之后，就可以进行代码的构建了。其中第一步就是编译, 编译阶段会生成各文件的目标文件，将生成的目标文件和系统库文件进行链接，最终生成了可以在特定平台运行的可执行文件。最后操作系统装载器会加载、解包这些数据，并将这些数据用于程序的执行阶段。</p>
 <div class="note info">
             <p>程序的生命周期简化</p><ul><li>编写源代码</li><li>编译</li><li>链接</li><li>装载</li><li>执行</li></ul>
           </div>
-<a id="more"></a>
 
 <h1 id="编译阶段"><a href="#编译阶段" class="headerlink" title="编译阶段"></a>编译阶段</h1><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;从广义上来讲，编译就是讲一种编程语言源代码转换为另一种编程语言描述的源代码。</p>
 <ul>
@@ -443,7 +444,7 @@
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">

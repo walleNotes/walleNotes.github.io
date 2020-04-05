@@ -126,7 +126,7 @@
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">11</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">12</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
@@ -256,20 +256,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <blockquote class="blockquote-center"><p>他山之石 可以攻玉 – 《诗经·小雅·鹤鸣》</p>
+          <blockquote class="blockquote-center"><p>CPP 引入 Smart Pointer 的原因，以及最佳实践 </p>
 </blockquote>
-
-<h2 id="Smart-Pointer-引入原因"><a href="#Smart-Pointer-引入原因" class="headerlink" title="Smart Pointer 引入原因"></a>Smart Pointer 引入原因</h2><p>使用 Raw Pointer 管理动态内存时，经常会遇到这样的问题：</p>
-<ul>
-<li>忘记delete内存，造成内存泄露</li>
-<li>出现异常时，不会执行delete，造成内存泄露</li>
-</ul>
-<p>下面的代码解释了，当一个操作发生异常时，会导致delete不会被执行：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> ptr = <span class="keyword">new</span> Widget;</span><br><span class="line">    <span class="comment">// 执行一个会抛出异常的操作</span></span><br><span class="line">    func_throw_exception();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">delete</span> ptr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在 C++98 中我们需要用一种笨拙的方式，写出异常安全的代码：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> ptr = <span class="keyword">new</span> Widget;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        func_throw_exception();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span>(...) &#123;</span><br><span class="line">        <span class="keyword">delete</span> ptr;</span><br><span class="line">        <span class="keyword">throw</span>; </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">delete</span> ptr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>C++11 使用 Smart Pointer 能轻易写出异常安全的代码，因为当对象退出作用域时, Smart Pointer 将自动调用对象的析构函数，避免内存泄露：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;Widget&gt; ptr&#123; <span class="keyword">new</span> Widget &#125;;</span><br><span class="line">    func_throw_exception();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2018/01/01/%E7%BC%96%E7%A8%8B/CPP/cpp_smart_ptr/#more" rel="contents">
@@ -371,7 +359,7 @@
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">

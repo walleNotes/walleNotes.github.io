@@ -21,18 +21,18 @@
     var CONFIG = {"hostname":"github.com","root":"/","scheme":"Gemini","version":"7.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":"ture"},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="就算影子也会在黑暗的时候离开   在日常工作中，经常会有同学提出这样的问题，  “我的程序运行时究竟占用了多大的内存?” “我的程序占用的虚拟内存非常大，这个正常么?”               &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;本文主要从以下几个方向，深入浅出的说明内存的基本布局，后续会更新内存的管理的文章。计算机体系结构存储器缓存策略虚拟内存虚拟地址进程">
+  <meta name="description" content="从存储器到内存映射布局">
 <meta property="og:type" content="article">
 <meta property="og:title" content="从存储器到内存映射布局">
 <meta property="og:url" content="https://github.com/walleNotes/wallenotes.github.io.git/2018/01/04/Linux/%E5%86%85%E5%AD%98/memory-standard-segment-layout/index.html">
 <meta property="og:site_name" content="walle&#39;s Notes">
-<meta property="og:description" content="就算影子也会在黑暗的时候离开   在日常工作中，经常会有同学提出这样的问题，  “我的程序运行时究竟占用了多大的内存?” “我的程序占用的虚拟内存非常大，这个正常么?”               &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;本文主要从以下几个方向，深入浅出的说明内存的基本布局，后续会更新内存的管理的文章。计算机体系结构存储器缓存策略虚拟内存虚拟地址进程">
+<meta property="og:description" content="从存储器到内存映射布局">
 <meta property="og:image" content="https://github.com/2018/01/04/Linux/%E5%86%85%E5%AD%98/memory-standard-segment-layout/os_abstract.png">
 <meta property="og:image" content="https://github.com/2018/01/04/Linux/%E5%86%85%E5%AD%98/memory-standard-segment-layout/memory_en.png">
 <meta property="og:image" content="https://github.com/2018/01/04/Linux/%E5%86%85%E5%AD%98/memory-standard-segment-layout/system-physical-memory.png">
 <meta property="og:image" content="https://github.com/2018/01/04/Linux/%E5%86%85%E5%AD%98/memory-standard-segment-layout/linux-process-memory.png">
 <meta property="article:published_time" content="2018-01-04T08:14:20.000Z">
-<meta property="article:modified_time" content="2020-03-14T11:11:15.558Z">
+<meta property="article:modified_time" content="2020-04-05T14:44:39.383Z">
 <meta property="article:author" content="Eter">
 <meta property="article:tag" content="内存">
 <meta property="article:tag" content="Linux">
@@ -134,7 +134,7 @@
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">11</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">12</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
@@ -244,14 +244,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>6.5k</span>
+              <span>5.7k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
+              <span>5 分钟</span>
             </span>
 
         </div>
@@ -263,8 +263,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <blockquote class="blockquote-center"><p>就算影子也会在黑暗的时候离开</p>
+        <blockquote class="blockquote-center"><p>从存储器到内存映射布局 </p>
 </blockquote>
+
+<a id="more"></a>
 
 <p>在日常工作中，经常会有同学提出这样的问题，</p>
 <ul>
@@ -272,15 +274,13 @@
 <li>“我的程序占用的虚拟内存非常大，这个正常么?”</li>
 </ul>
 <div class="note info">
-            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本文主要从以下几个方向，深入浅出的说明内存的基本布局，后续会更新内存的管理的文章。</p><ul><li>计算机体系结构</li><li>存储器缓存策略</li><li>虚拟内存</li><li>虚拟地址</li><li>进程的内存划分方案</li></ul>
+            <p>本文主要从以下几个方向，深入浅出的说明内存的基本布局，后续会更新内存的管理的文章。</p><ul><li>计算机体系结构</li><li>存储器缓存策略</li><li>虚拟内存</li><li>虚拟地址</li><li>进程的内存划分方案</li></ul>
           </div>
 
-<h2 id="计算机体系结构"><a href="#计算机体系结构" class="headerlink" title="计算机体系结构"></a>计算机体系结构</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;计算机技术领域的变化日新月异，集成电路技术带来的元件不仅种类繁多，而且在功能方面还在不断改进增强。按照摩尔定律，集成电路上可容纳的晶体管数目大约每两年便会增加一倍。而与晶体管数据量密切相关的处理能力也将提升一倍。</p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;经验告诉我们，想要应对这种快速的变化，就是在经常变动的实现层次之上，利用抽象和泛华的方法为计算机系统定义全局目标和结构体系。这种方法的核心在于描述抽象的方式，该方式要确保在去除相对无关的实现细节后，任何新的实现与核心定义都能保持一致。</p>
+<h2 id="计算机体系结构"><a href="#计算机体系结构" class="headerlink" title="计算机体系结构"></a>计算机体系结构</h2><p>计算机技术领域的变化日新月异，集成电路技术带来的元件不仅种类繁多，而且在功能方面还在不断改进增强。按照摩尔定律，集成电路上可容纳的晶体管数目大约每两年便会增加一倍。而与晶体管数据量密切相关的处理能力也将提升一倍。</p>
+<p>经验告诉我们，想要应对这种快速的变化，就是在经常变动的实现层次之上，利用抽象和泛华的方法为计算机系统定义全局目标和结构体系。这种方法的核心在于描述抽象的方式，该方式要确保在去除相对无关的实现细节后，任何新的实现与核心定义都能保持一致。</p>
 <p>整个计算机体系结构可用下图表示:</p>
 <img src="/2018/01/04/Linux/%E5%86%85%E5%AD%98/memory-standard-segment-layout/os_abstract.png" class="">
-
-<a id="more"></a>
 
 <p>在计算机系统中，有一些和存储器相关的趣事：</p>
 <ul>
@@ -288,37 +288,37 @@
 <li>存储器技术似乎是导致处理器性能障碍的主要原因<br>– 这种被称为”处理器和存储器之间的速度鸿沟(The processor-memory gap)”</li>
 <li>存储器的访问能力与其存储容量成反比。</li>
 </ul>
-<h2 id="存储器缓存策略"><a href="#存储器缓存策略" class="headerlink" title="存储器缓存策略"></a>存储器缓存策略</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;我们从程序员、设计师和工程师的角度，我们希望系统能够以最快的速度访问所有可用存储器。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;但是这个基本上是不可能的，实际上系统并不是使用所有的存储器，而是仅仅是在某些时段内使用某一部分存储器。这个情况下，只需要为程序预留相对最快的存储器，而让那些并非立即执行的代码或者数据使用相对较慢的存储器。当CPU立即需要执行指令时，在执行到存储在较慢的存储器上的代码之前，这些代码会转存在较快的存储器中，这种策略称为”缓存”。</p>
+<h2 id="存储器缓存策略"><a href="#存储器缓存策略" class="headerlink" title="存储器缓存策略"></a>存储器缓存策略</h2><p>我们从程序员、设计师和工程师的角度，我们希望系统能够以最快的速度访问所有可用存储器。<br>但是这个基本上是不可能的，实际上系统并不是使用所有的存储器，而是仅仅是在某些时段内使用某一部分存储器。这个情况下，只需要为程序预留相对最快的存储器，而让那些并非立即执行的代码或者数据使用相对较慢的存储器。当CPU立即需要执行指令时，在执行到存储在较慢的存储器上的代码之前，这些代码会转存在较快的存储器中，这种策略称为”缓存”。</p>
 <p>缓存策略无处不在，横跨多个级别的存储器，如下图所示：</p>
 <img src="/2018/01/04/Linux/%E5%86%85%E5%AD%98/memory-standard-segment-layout/memory_en.png" class="">
 
-<h2 id="虚拟内存"><a href="#虚拟内存" class="headerlink" title="虚拟内存"></a>虚拟内存</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;我们用名为”进程”的抽象概念来表示正在运行的程序。现在多任务操作系统的设计允许一个或者多个用户并发地运行多个程序，对于一个普通用户来说，同时运行多个应用程序（比如听歌、看网页、编辑文档）在正常不过了。</p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;通过虚拟内存的概念，可以很好的解决内存需求与有限的内存容量之间的矛盾，运行时的物理内存会被划分成数个小的分段（页），每个页都可以用来同步执行程序。正在运行的程序的完整内存布局会被保存在低速存储器（磁盘）中。只有那些当前即将被执行的一部分内存（代码和数据）才会被加载到物理内存页中。</p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;首先需要强调的是虚拟内存不同于物理内存，二者属于不同层面的东西。<br>进程占用虚拟内存空间大并非意味着程序的物理内存也一定占用很大。虚拟内存是操作系统内核为了对进程地址空间进行管理(process address space management)而设计的一个逻辑意义上的内存空间概念，我们程序中的指针其实都是这个虚拟内存空间中的地址。</p>
+<h2 id="虚拟内存"><a href="#虚拟内存" class="headerlink" title="虚拟内存"></a>虚拟内存</h2><p>我们用名为”进程”的抽象概念来表示正在运行的程序。现在多任务操作系统的设计允许一个或者多个用户并发地运行多个程序，对于一个普通用户来说，同时运行多个应用程序（比如听歌、看网页、编辑文档）在正常不过了。</p>
+<p>通过虚拟内存的概念，可以很好的解决内存需求与有限的内存容量之间的矛盾，运行时的物理内存会被划分成数个小的分段（页），每个页都可以用来同步执行程序。正在运行的程序的完整内存布局会被保存在低速存储器（磁盘）中。只有那些当前即将被执行的一部分内存（代码和数据）才会被加载到物理内存页中。</p>
+<p>首先需要强调的是虚拟内存不同于物理内存，二者属于不同层面的东西。<br>进程占用虚拟内存空间大并非意味着程序的物理内存也一定占用很大。虚拟内存是操作系统内核为了对进程地址空间进行管理(process address space management)而设计的一个逻辑意义上的内存空间概念，我们程序中的指针其实都是这个虚拟内存空间中的地址。</p>
 <div class="note info">
             <p><strong>虚拟地址</strong>(virtual address):</p><ul><li>CPU启动保护模式后，程序运行在虚拟地址空间中。</li><li>注意，并不是所有的“程序”都是运行在虚拟地址中。 </li><li>CPU在启动的时候是运行在实模式的，Bootloader以及内核在初始化页表之前并不使用虚拟地址，而是直接使用物理地址的。</li><li>虚拟地址范围：编程模型假定地址空间的范围在0到$2^N$，其中N是32或者64。</li></ul>
           </div>
 
 
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;比如我们写完一个C/C++项目之后，采用gcc/g++进行编译，这个时候编译器采用的地址其实就是虚拟内存空间的地址。因为这时程序都没有开始运行，所以何谈物理内存空间地址？</p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;凡是程序运行过程中可能需要用到的指令或者数据都必须在虚拟内存空间中。既然说虚拟内存是一个逻辑意义上(逻辑存在)的内存空间，为了能够让程序在物理机器上运行起来，那就需要有一套机制可以让这些虚拟内存空间映射到物理内存空间(真实内存条上的空间)。</p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在Linux中，解决这个问题的关键是一个叫做 page table (PT页面转换表) 的结构。Linux把物理内存分为了固定统一大小的块，称为page(页)，一般为4KB，并且每个页都有一个编号”page frame number”。这样一个512M大小的内存将包括128K个页。这种方式称为paging，使得操作系统对内存的管理更方便。page table的作用就是将进程操作的地址(虚拟地址)转换成物理地址。</p>
+<p>比如我们写完一个C/C++项目之后，采用gcc/g++进行编译，这个时候编译器采用的地址其实就是虚拟内存空间的地址。因为这时程序都没有开始运行，所以何谈物理内存空间地址？</p>
+<p>凡是程序运行过程中可能需要用到的指令或者数据都必须在虚拟内存空间中。既然说虚拟内存是一个逻辑意义上(逻辑存在)的内存空间，为了能够让程序在物理机器上运行起来，那就需要有一套机制可以让这些虚拟内存空间映射到物理内存空间(真实内存条上的空间)。</p>
+<p>在Linux中，解决这个问题的关键是一个叫做 page table (PT页面转换表) 的结构。Linux把物理内存分为了固定统一大小的块，称为page(页)，一般为4KB，并且每个页都有一个编号”page frame number”。这样一个512M大小的内存将包括128K个页。这种方式称为paging，使得操作系统对内存的管理更方便。page table的作用就是将进程操作的地址(虚拟地址)转换成物理地址。</p>
 <p>关于 page table 内容原理，可以参考以下文章。</p>
 <div class="note info">
             <p>Linux Page Tables ： <a href="http://www.linux-tutorial.info/modules.php?name=MContent&amp;pageid=307" target="_blank" rel="noopener">www.linux-tutorial.info/modules.php?name=MContent&amp;pageid=307</a></p>
           </div>
 
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;内核会为系统中每一个进程维护一份相互独立的页映射表，页映射表的基本原理是将程序运行过程中需要访问的一段虚拟内存空间通过页映射表映射到一段物理内存空间上，这样CPU访问对应虚拟内存地址的时候就可以通过这种查找页映射表的机制访问物理内存上的某个对应的地址。</p>
+<p>内核会为系统中每一个进程维护一份相互独立的页映射表，页映射表的基本原理是将程序运行过程中需要访问的一段虚拟内存空间通过页映射表映射到一段物理内存空间上，这样CPU访问对应虚拟内存地址的时候就可以通过这种查找页映射表的机制访问物理内存上的某个对应的地址。</p>
 <p>“页(page)”是虚拟内存空间向物理内存空间映射的基本单元。</p>
 <p>虚拟内存的概念如下图所示：</p>
 <img src="/2018/01/04/Linux/%E5%86%85%E5%AD%98/memory-standard-segment-layout/system-physical-memory.png" class="" title="图3 虚拟内存空间到物理内存空间的映射">
 
 <p>上图演示了虚拟内存空间和物理内存空间的相互关系。它们通过Page Table关联起来。</p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;其中虚拟内存空间中着色部分分别被映射到了物理内存空间对应相同的着色的部分。而虚拟内存空间中灰色的部分表示在物理内存空间中没有与之对应的部分，也就是说灰色部分没有被映射到物理内存空间中。因为虚拟内存空间很大，可能其中很多部分在一次程序运行中根本不需要访问，所以也就没有必要讲虚拟内存空间中的这些部分映射到物理内存空间上。</p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;那么，总结一下，虚拟内存就是一个逻辑存在的内存空间，在程序运行过程中虚拟内存空间中需要被访问的部分会被映射到物理内存空间。虚拟内存空间大只能表示程序运行过程中可访问的空间比较大，不代表物理内存空间占用也大。</p>
-<h3 id="驻留内存"><a href="#驻留内存" class="headerlink" title="驻留内存"></a>驻留内存</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;顾名思义是指那些被映射到进程虚拟内存空间的物理内存。上图3中，在系统物理内存空间中被着色的部分都是驻留内存。</p>
+<p>其中虚拟内存空间中着色部分分别被映射到了物理内存空间对应相同的着色的部分。而虚拟内存空间中灰色的部分表示在物理内存空间中没有与之对应的部分，也就是说灰色部分没有被映射到物理内存空间中。因为虚拟内存空间很大，可能其中很多部分在一次程序运行中根本不需要访问，所以也就没有必要讲虚拟内存空间中的这些部分映射到物理内存空间上。</p>
+<p>那么，总结一下，虚拟内存就是一个逻辑存在的内存空间，在程序运行过程中虚拟内存空间中需要被访问的部分会被映射到物理内存空间。虚拟内存空间大只能表示程序运行过程中可访问的空间比较大，不代表物理内存空间占用也大。</p>
+<h3 id="驻留内存"><a href="#驻留内存" class="headerlink" title="驻留内存"></a>驻留内存</h3><p>顾名思义是指那些被映射到进程虚拟内存空间的物理内存。上图3中，在系统物理内存空间中被着色的部分都是驻留内存。</p>
 <p>比如，A1、A2、A3和A4是进程A的驻留内存；B1、B2和B3是进程B的驻留内存。</p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;进程的驻留内存就是进程实实在在占用的物理内存。一般我们所讲的进程占用了多少内存，其实就是说的占用了多少驻留内存而不是多少虚拟内存。因为虚拟内存大并不意味着占用的物理内存大。</p>
+<p>进程的驻留内存就是进程实实在在占用的物理内存。一般我们所讲的进程占用了多少内存，其实就是说的占用了多少驻留内存而不是多少虚拟内存。因为虚拟内存大并不意味着占用的物理内存大。</p>
 <div class="note info">
             <p>以下为具体示例：</p>
           </div>
@@ -424,13 +424,13 @@
 <td align="left">共享内存大小</td>
 </tr>
 </tbody></table>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;搞清楚了虚拟内存的概念之后解释VIRT就很简单了，VIRT表示虚拟内存空间大小结合图1(计算机体系结构抽象），对应到图3(虚拟内存空间到物理内存空间的映射）中来说就是A1、A2、A3、A4以及灰色部分所有空间的总和。也就是说虚拟包含了在已经映射到物理内存空间的部分和尚未映射到物理内存空间的部分的总和。</p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RES的含义是指进程虚拟内存空间中已经映射到物理内存空间的那部分的大小。对应到图1中的进程A来说就是A1、A2、A3以及A4几个部分空间的总和。所以说，看进程在运行过程中占用了多少内存应该看RES的值而不是VIRT的值。</p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;最后来看看SHR所表示的含义。SHR是share（共享）的缩写，它表示的是进程占用的共享内存大小。在上图1中我们看到进程A虚拟内存空间中的A4和进程B虚拟内存空间中的B3都映射到了物理内存空间的A4/B3部分。咋一看很奇怪。为什么会出现这样的情况呢？其实我们写的程序会依赖于很多外部的动态库（.so），比如libc.so、libld.so等等。这些动态库在内存中仅仅会保存/映射一份，如果某个进程运行时需要这个动态库，那么动态加载器会将这块内存映射到对应进程的虚拟内存空间中。多个进展之间通过共享内存的方式相互通信也会出现这样的情况。这么一来，就会出现不同进程的虚拟内存空间会映射到相同的物理内存空间。这部分物理内存空间其实是被多个进程所共享的，所以我们将他们称为共享内存，用SHR来表示。某个进程占用的内存除了和别的进程共享的内存之外就是自己的独占内存了。所以要计算进程独占内存的大小只要用RES的值减去SHR值即可。</p>
+<p>搞清楚了虚拟内存的概念之后解释VIRT就很简单了，VIRT表示虚拟内存空间大小结合图1(计算机体系结构抽象），对应到图3(虚拟内存空间到物理内存空间的映射）中来说就是A1、A2、A3、A4以及灰色部分所有空间的总和。也就是说虚拟包含了在已经映射到物理内存空间的部分和尚未映射到物理内存空间的部分的总和。</p>
+<p>RES的含义是指进程虚拟内存空间中已经映射到物理内存空间的那部分的大小。对应到图1中的进程A来说就是A1、A2、A3以及A4几个部分空间的总和。所以说，看进程在运行过程中占用了多少内存应该看RES的值而不是VIRT的值。</p>
+<p>最后来看看SHR所表示的含义。SHR是share（共享）的缩写，它表示的是进程占用的共享内存大小。在上图1中我们看到进程A虚拟内存空间中的A4和进程B虚拟内存空间中的B3都映射到了物理内存空间的A4/B3部分。咋一看很奇怪。为什么会出现这样的情况呢？其实我们写的程序会依赖于很多外部的动态库（.so），比如libc.so、libld.so等等。这些动态库在内存中仅仅会保存/映射一份，如果某个进程运行时需要这个动态库，那么动态加载器会将这块内存映射到对应进程的虚拟内存空间中。多个进展之间通过共享内存的方式相互通信也会出现这样的情况。这么一来，就会出现不同进程的虚拟内存空间会映射到相同的物理内存空间。这部分物理内存空间其实是被多个进程所共享的，所以我们将他们称为共享内存，用SHR来表示。某个进程占用的内存除了和别的进程共享的内存之外就是自己的独占内存了。所以要计算进程独占内存的大小只要用RES的值减去SHR值即可。</p>
 <p>这片文章主要简单讲解Linux下进程的内存映射布局。</p>
 <p>内存管理是操作系统的核心; 这对于编程和系统管理都至关重要。</p>
-<h2 id="进程的内存划分方案"><a href="#进程的内存划分方案" class="headerlink" title="进程的内存划分方案"></a>进程的内存划分方案</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本节主要讨论进程内存映射的内部组织细节，我们假定的程序地址空间的范围在0到$2^N$，其中N是32或者64。</p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;不同的多任务或者多用户操作系统拥有不同的内存映射布局。对于Linux进程的虚拟内存映射来说，其遵循图4所示的映射方案。</p>
+<h2 id="进程的内存划分方案"><a href="#进程的内存划分方案" class="headerlink" title="进程的内存划分方案"></a>进程的内存划分方案</h2><p>本节主要讨论进程内存映射的内部组织细节，我们假定的程序地址空间的范围在0到$2^N$，其中N是32或者64。</p>
+<p>不同的多任务或者多用户操作系统拥有不同的内存映射布局。对于Linux进程的虚拟内存映射来说，其遵循图4所示的映射方案。</p>
 <img src="/2018/01/04/Linux/%E5%86%85%E5%AD%98/memory-standard-segment-layout/linux-process-memory.png" class="" title="图3 虚拟内存空间到物理内存空间的映射">
 
 <p>无论平台的进程内存划分方案多么特殊，下面几个内存映射的节(section)都是必须支持的:</p>
@@ -450,6 +450,7 @@
 <p>所有现代操作系统都是按照这种角色分离的方式设计的。</p>
 <p>需要注意的是，以上描述是一个粗略地描述。</p>
 <h2 id="文章参考"><a href="#文章参考" class="headerlink" title="文章参考:"></a>文章参考:</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[1]: 探索 Linux 内存模型： https://www.ibm.com/developerworks/cn/linux/l-memmod/</span><br><span class="line">[2]: 理解VIRT/RES/SHR之间的关系: http://orchome.com/298</span><br></pre></td></tr></table></figure>
+
     </div>
 
     
@@ -558,7 +559,7 @@
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
