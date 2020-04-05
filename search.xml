@@ -4,6 +4,76 @@
   
     
     <entry>
+      <title>如何使用 pprof 调试 golang 应用</title>
+      <link href="/2020/04/05/%E7%BC%96%E7%A8%8B/%E8%B0%83%E8%AF%95/how-to-use-go-pprof/"/>
+      <url>/2020/04/05/%E7%BC%96%E7%A8%8B/%E8%B0%83%E8%AF%95/how-to-use-go-pprof/</url>
+      
+        <content type="html"><![CDATA[<blockquote class="blockquote-center"><p>M3O is a serverless microservices platform </p></blockquote>]]></content>
+      
+      
+      <categories>
+          
+          <category> 架构 </category>
+          
+          <category> 微服务 </category>
+          
+          <category> go-micro </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Go Micro </tag>
+            
+            <tag> Go </tag>
+            
+            <tag> 微服务 </tag>
+            
+            <tag> 架构 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>M3O - 如何开启 debugging 调试</title>
+      <link href="/2020/04/05/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-005/"/>
+      <url>/2020/04/05/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-005/</url>
+      
+        <content type="html"><![CDATA[<blockquote class="blockquote-center"><p>M3O is a serverless microservices platform </p></blockquote><p>Go-micro支持设置日志打印级别以及采集运行概要。</p><h2 id="打印日志"><a href="#打印日志" class="headerlink" title="打印日志"></a>打印日志</h2><p>调整日志级别</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># MICRO_LOG_LEVEL=debug go run main.go</span></span><br></pre></td></tr></table></figure><p>目前日志支持的级别：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">trace</span><br><span class="line">debug</span><br><span class="line">error</span><br><span class="line">info</span><br></pre></td></tr></table></figure><h2 id="Profiling-运行概要"><a href="#Profiling-运行概要" class="headerlink" title="Profiling 运行概要"></a>Profiling 运行概要</h2><p>支持激活Go pprof采集运行概要</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># MICRO_DEBUG_PROFILE=true go run main.go</span></span><br></pre></td></tr></table></figure><p>该变量会激活cpu及内存heap运行的信息到 /tmp/[service name].[service version].{cpu, mem}.pprof中。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 架构 </category>
+          
+          <category> 微服务 </category>
+          
+          <category> go-micro </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Go Micro </tag>
+            
+            <tag> Go </tag>
+            
+            <tag> 微服务 </tag>
+            
+            <tag> 架构 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>M3O - 微服务的设计模式</title>
       <link href="/2020/03/28/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-004/"/>
       <url>/2020/03/28/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-004/</url>
