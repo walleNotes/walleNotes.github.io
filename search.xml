@@ -4,6 +4,41 @@
   
     
     <entry>
+      <title>M3O - 运行时工具 micro api</title>
+      <link href="/2020/04/12/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-006/"/>
+      <url>/2020/04/12/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-006/</url>
+      
+        <content type="html"><![CDATA[<blockquote class="blockquote-center"><p>M3O - 运行时工具 micro api </p></blockquote><a id="more"></a><blockquote><p><code>micro api</code> 就是 api 网关</p></blockquote><p>API 网关模式为服务提供了一个单一的公共入口。通过服务发现，<code>micro api</code> 以http 方式，将请求动态路由到具体的后台服务接口。我们以下简称 <code>API网关</code>。</p><img src="/2020/04/12/%E6%9E%B6%E6%9E%84/%E5%BE%AE%E6%9C%8D%E5%8A%A1/go-micro/go-micro-006/api.png" class=""><p>这种服务方式，将简化下游服务调用方式，极大的降低了使用难度。</p><h2 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h2><p><code>API网关</code> 基于 <code>go-micro</code> 开发，所以它默认具备<code>服务发现</code>、<code>负载均衡</code>、<code>编码及RPC通信的能力</code>，故而，<code>API网关</code> 也是 <code>go-micro</code> 体系中的一个微服务，所以它自身也是可插拔的。</p><h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go get -u github.com/micro/micro</span><br></pre></td></tr></table></figure><h2 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 默认的端口是8080, 如果不指定注册中心，默认 MICRO_REGISTRY 为 mdns</span></span><br><span class="line">micro api</span><br></pre></td></tr></table></figure><h2 id="使用ACME协议"><a href="#使用ACME协议" class="headerlink" title="使用ACME协议"></a>使用ACME协议</h2><p>ACME（ Automatic Certificate Management Environment）是由 Let’s Encrypt制定的安全协议。</p><h3 id="ACME-资料"><a href="#ACME-资料" class="headerlink" title="ACME 资料"></a>ACME 资料</h3><ul><li><a href="https://letsencrypt.org/zh-cn/docs/" target="_blank" rel="noopener">ACME 文档</a></li><li><a href="https://letsencrypt.org/zh-cn/how-it-works/" target="_blank" rel="noopener">Let’s Encrypt 的运作方式</a></li><li><a href="https://letsencrypt.org/zh-cn/docs/client-options/" target="_blank" rel="noopener">ACME 客户端</a></li></ul><blockquote><p>为了在您的网站上启用 HTTPS，您需要从证书颁发机构（CA）获取证书（一种文件）。Let’s Encrypt 是一个证书颁发机构（CA）。要从 Let’s Encrypt 获取您网站域名的证书，您必须证明您对域名的实际控制权。您可以在您的 Web 主机上运行使用 ACME 协议的软件来获取 Let’s Encrypt 证书。</p></blockquote><h3 id="API网关启用-ACME"><a href="#API网关启用-ACME" class="headerlink" title="API网关启用 ACME"></a><code>API网关</code>启用 <code>ACME</code></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MICRO_ENABLE_ACME=<span class="literal">true</span> micro api</span><br></pre></td></tr></table></figure><h3 id="配置白名单"><a href="#配置白名单" class="headerlink" title="配置白名单"></a>配置白名单</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">MICRO_ENABLE_ACME=<span class="literal">true</span> \</span><br><span class="line">MICRO_ACME_HOSTS=example.com,api.example.com \</span><br><span class="line">micro api</span><br></pre></td></tr></table></figure><h2 id="设置-TLS-证书"><a href="#设置-TLS-证书" class="headerlink" title="设置 TLS 证书"></a>设置 <code>TLS</code> 证书</h2><p>API服务支持TLS证书</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">MICRO_ENABLE_TLS=<span class="literal">true</span> \</span><br><span class="line">MICRO_TLS_CERT_FILE=/path/to/cert \</span><br><span class="line">MICRO_TLS_KEY_FILE=/path/to/key \</span><br><span class="line">micro api</span><br></pre></td></tr></table></figure><h2 id="设置命名空间"><a href="#设置命名空间" class="headerlink" title="设置命名空间"></a>设置命名空间</h2><p>API使用带分隔符的命名空间来在逻辑上区分后台服务及公开的服务。命名空间及 <code>http</code> 请求路径会用于解析服务名与方法，比如 <code>GET /foo HTTP/1.1</code> 会被路由到 <code>go.micro.api.foo</code> 服务上。</p><p>API默认的命名空间是 <code>go.micro.api</code>，当然，也可以修改：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MICRO_NAMESPACE=com.example.api micro api</span><br></pre></td></tr></table></figure><p>通过设置命名空间为为空禁用命名空间，不建议禁用命名空间，如果非要禁用，可以通过以下方法设置。</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MICRO_NAMESPACE=<span class="string">' '</span></span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 架构 </category>
+          
+          <category> 微服务 </category>
+          
+          <category> go-micro </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Go </tag>
+            
+            <tag> Go Micro </tag>
+            
+            <tag> 微服务 </tag>
+            
+            <tag> 架构 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>如何使用 pprof 调试 golang 应用</title>
       <link href="/2020/04/05/%E7%BC%96%E7%A8%8B/%E8%B0%83%E8%AF%95/how-to-use-go-pprof/"/>
       <url>/2020/04/05/%E7%BC%96%E7%A8%8B/%E8%B0%83%E8%AF%95/how-to-use-go-pprof/</url>
