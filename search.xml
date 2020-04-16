@@ -53,11 +53,11 @@
             
             <tag> Cassandra </tag>
             
+            <tag> NoSQL </tag>
+            
             <tag> Prometheus </tag>
             
             <tag> Grafana </tag>
-            
-            <tag> NoSQL </tag>
             
         </tags>
       
