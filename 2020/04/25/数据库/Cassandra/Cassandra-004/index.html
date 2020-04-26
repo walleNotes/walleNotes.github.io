@@ -29,10 +29,12 @@
 <meta property="og:description" content="Cassandra 架构设计">
 <meta property="og:image" content="https://github.com/2020/04/25/%E6%95%B0%E6%8D%AE%E5%BA%93/Cassandra/Cassandra-004/arch.png">
 <meta property="og:image" content="https://github.com/2020/04/25/%E6%95%B0%E6%8D%AE%E5%BA%93/Cassandra/Cassandra-004/rings.png">
+<meta property="og:image" content="https://github.com/2020/04/25/%E6%95%B0%E6%8D%AE%E5%BA%93/Cassandra/Cassandra-004/ringsvnode.png">
 <meta property="og:image" content="https://github.com/2020/04/25/%E6%95%B0%E6%8D%AE%E5%BA%93/Cassandra/Cassandra-004/nodes.png">
 <meta property="og:image" content="https://github.com/2020/04/25/%E6%95%B0%E6%8D%AE%E5%BA%93/Cassandra/Cassandra-004/nodeinfo.png">
+<meta property="og:image" content="https://github.com/2020/04/25/%E6%95%B0%E6%8D%AE%E5%BA%93/Cassandra/Cassandra-004/flow.png">
 <meta property="article:published_time" content="2020-04-25T02:31:09.000Z">
-<meta property="article:modified_time" content="2020-04-26T14:35:45.185Z">
+<meta property="article:modified_time" content="2020-04-26T15:06:18.450Z">
 <meta property="article:author" content="Eter">
 <meta property="article:tag" content="Cassandra">
 <meta property="article:tag" content="NoSQL">
@@ -244,14 +246,14 @@
                 <i class="fa fa-file-word-o"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>3.8k</span>
+              <span>5.1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
+              <span>5 分钟</span>
             </span>
 
         </div>
@@ -274,7 +276,40 @@
 <li>多数据中心</li>
 <li>数据快速增长的应用</li>
 </ul>
-<h1 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h1><h2 id="Data-Centers-and-Racks"><a href="#Data-Centers-and-Racks" class="headerlink" title="Data Centers and Racks"></a>Data Centers and Racks</h2><img src="/2020/04/25/%E6%95%B0%E6%8D%AE%E5%BA%93/Cassandra/Cassandra-004/arch.png" class="" title="Arch">
+<h1 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h1><h2 id="关键词"><a href="#关键词" class="headerlink" title="关键词"></a>关键词</h2><table>
+<thead>
+<tr>
+<th align="center">KeyWord</th>
+<th align="center">Explain</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Gossip</td>
+<td align="center">点对点通信协议，用以Cassandra集群中节点间交换位置和状态信息。</td>
+</tr>
+<tr>
+<td align="center">Partitioner</td>
+<td align="center">决定如何在集群中的节点间分发数据，即在哪个节点放置数据的第一个replica。</td>
+</tr>
+<tr>
+<td align="center">Replica placement strategy</td>
+<td align="center">决定在哪些节点放置每行数据的其他replica。Cassandra在集群中的多个节点存储数据的多份拷贝(replicas)来确保可靠和容错。</td>
+</tr>
+<tr>
+<td align="center">Snitch</td>
+<td align="center">定义了复制策略用来放置replicas和路由请求所使用的拓扑信息</td>
+</tr>
+<tr>
+<td align="center">Virtual nodes</td>
+<td align="center">虚拟节点, 指定数据与物理节点的所属关系</td>
+</tr>
+<tr>
+<td align="center">Token Ring</td>
+<td align="center">令牌环</td>
+</tr>
+</tbody></table>
+<h2 id="Data-Centers-and-Racks"><a href="#Data-Centers-and-Racks" class="headerlink" title="Data Centers and Racks"></a>Data Centers and Racks</h2><img src="/2020/04/25/%E6%95%B0%E6%8D%AE%E5%BA%93/Cassandra/Cassandra-004/arch.png" class="" title="Arch">
+
 
 <h3 id="Rack"><a href="#Rack" class="headerlink" title="Rack"></a>Rack</h3><p>一个逻辑集合，有多个彼此临近 <code>node</code> 的组成。比如一个机架上的所有物理机器。</p>
 <h3 id="Data-Center"><a href="#Data-Center" class="headerlink" title="Data Center"></a>Data Center</h3><p>有多个Rack组成的逻辑集合。建议将节点部署到多个数据中心。</p>
@@ -307,6 +342,12 @@
 <p>配置文件里的 <code>token</code> 仅在系统第一次启动时被使用，然后该值被写入 <code>system</code> 文件，以后系统启动将不再从配置文件读取 <code>token</code> 。因此若你发现两台节点的 <code>token</code> 重复，你无法通过改变配置文件里的 <code>token</code> 来改变节点的 <code>token</code> 。正确的修改方法是删除自定义 <code>token</code> 文件夹里的所有文件，重新启动服务。</p>
 <p> <code>token</code> 会直接影响集群里节点所承受的负载，我们应该尽量保证每个节点所负责的 <code>token</code> 范围是平衡的。若你发现节点的负载不平衡，你可以手动改变它们的 <code>token</code> 来让它们平衡。先计算出每台节点的 <code>token</code> （平均分配），然后使用 <code>nodetool</code> 工具改变它。下面给出一个java里计算token的方法，参数是节点数。</p>
 <h2 id="Virtual-Nodes"><a href="#Virtual-Nodes" class="headerlink" title="Virtual Nodes"></a>Virtual Nodes</h2><p>早期 <code>Cassandra</code> 版本给每个节点只分配了一个 <code>token</code> 范围，添加删除节点,需要手动重新配置 <code>token</code> 范围。一方面繁琐的操作，另一方面会导致大量的数据迁移。<br>在1.2版本介绍了 <code>virtual node</code> 的概念简称 <code>vnode</code> ,原先的 <code>token</code> 范围被缩减为多个更小的 <code>token</code> 范围。每个节点包含多个 <code>token</code> 范围。默认每个节点产生256个 <code>token</code> 范围（通过 <code>num_tokens</code> 调节），也就是256个 <code>vnode</code> 。在2.0以后默认开启。<br>在性能差的节点上, 可以适当减少 <code>num_tokens</code> 的值。<br><code>org.apache.cassandra.dht.tokenallocator.ReplicationAwareTokenAllocator</code>用于计算节点的token范围。</p>
+<img src="/2020/04/25/%E6%95%B0%E6%8D%AE%E5%BA%93/Cassandra/Cassandra-004/ringsvnode.png" class="" title="RingsAndVnode">
+
+<div class="note info">
+            <p>图解: 没有使用虚拟节点，Ring 环的 <code>tokens数量 = 集群的机器数量</code>。 比如上面一共有6个节点，所以 <code>token 数量 = 6</code>。<br>因为 <code>副本因子 = 3</code>，一条记录要在集群中的三个节点存在。简单地方式是计算 <code>rowkey的hash值</code>，落在环中的哪个 <code>token</code>上，第一份数据就在那个节点上, 剩余两个副本落在这个节点在 <code>token</code> 环上的后两个节点。<br>图中的 A,B,C,D,E,F 是 <code>key</code> 的范围，真实的值是 <code>hash环空间</code>，比如 0~2^32 区间分成10份，每一段是 2^32的 1/10 。<br><code>Note 1</code> 包含 A，F，E 表示 key 范围在 A，F，E 的数据会存储到 <code>Note 1</code> 上，以此类推。</p><h3 id="Rings-Without-Virtual-Nodes"><a href="#Rings-Without-Virtual-Nodes" class="headerlink" title="Rings Without Virtual Nodes"></a>Rings Without Virtual Nodes</h3><p>手工为集群中每个节点计算和分配一个 <code>token</code>。每个 <code>token</code> 决定了节点在环中的位置以及节点应当承担的一段连续的数据 <code>hash</code> 值的范围，每个节点分配了一个单独的 <code>token</code> 代表环中的一个位置，每个节点存储将<code>row key</code> 映射为 <code>hash</code> 值之后落在该节点应当承担的唯一的一段连续的 <code>hash</code> 值范围内的数据。每个节点也包含来自其他节点的 <code>row</code> 的副本。</p><h3 id="Rings-With-Virtual-Nodes"><a href="#Rings-With-Virtual-Nodes" class="headerlink" title="Rings With Virtual Nodes"></a>Rings With Virtual Nodes</h3><p>允许每个节点拥有多个较小的不连续的 <code>hash</code> 值范围，集群中的节点使用了虚拟节点，虚拟节点随机选择且不连续。数据的存放位置也由 <code>row key</code> 映射而得的hash值确定，但是是落在更小的分区范围内。</p><h3 id="The-Benefit-of-Using-Rings-with-virtual-nodes"><a href="#The-Benefit-of-Using-Rings-with-virtual-nodes" class="headerlink" title="The Benefit of Using Rings with virtual nodes"></a>The Benefit of Using Rings with virtual nodes</h3><ul><li>无需为每个节点计算、分配token</li><li>添加移除节点后无需重新平衡集群负载</li><li>减少大量的大量的数据迁移</li><li>重建故障节点更快</li></ul>
+          </div>
+
 <h2 id="Partitioners"><a href="#Partitioners" class="headerlink" title="Partitioners"></a>Partitioners</h2><p><code>partitioners</code> 决定数据存放在哪个 <code>vnode</code> 上。它是一个 <code>hash</code> 函数，计算每行的  <code>partition key</code> 的 <code>hash</code> 值。<br>代码在 <code>org.apache.cassandra.dht</code> 包里,目前主要用 <code>Murmur3Partitioner</code><br><code>DHT</code>即为<code>distributed hash table</code>。</p>
 <h2 id="Replication-Strategies"><a href="#Replication-Strategies" class="headerlink" title="Replication Strategies"></a>Replication Strategies</h2><p>第一份复制存在对应 ``vnode<code>中。其他复制的存放位置由</code>replica strategy<code>(或叫</code>replica placement strategy`)决定。</p>
 <p>主要有两种策略：</p>
@@ -338,6 +379,10 @@
           </div>
 
 
+<h1 id="基本流程"><a href="#基本流程" class="headerlink" title="基本流程"></a>基本流程</h1><p>基本流程: 点对点分布式系统，集群中各节点平等，数据分布于集群中各节点，各节点间每秒交换一次信息。<br>每个节点的 <code>commit log</code> 提交日志捕获写操作来确保数据持久性。<br>数据先被写入 <code>MemTable</code> (内存中的数据结构)，待 <code>MemTable</code> 满后数据被写入 <code>SSTable</code> (硬盘的数据文件)。<br>所有的写内容被自动在集群中 <code>partition</code> 分区并 <code>replicate</code> 复制。</p>
+<p>库表结构: <code>Cassandra</code> 数据库面向行。用户可连接至集群的任意节点，通过类似 SQL 的 <code>CQL</code> 查询数据。<br>集群中，一个应用一般包含一个keyspace，一个keyspace中包含多个表。</p>
+<p>读写请求: 客户端连接到某一节点发起读或写请求时，该节点充当客户端应用与拥有相应数据的节点间的<br><code>coordinator</code> 协调者以根据集群配置确定环(ring)中的哪个节点应当获取这个请求。</p>
+<img src="/2020/04/25/%E6%95%B0%E6%8D%AE%E5%BA%93/Cassandra/Cassandra-004/flow.png" class="" title="Flow">
     </div>
 
     
@@ -420,7 +465,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概览"><span class="nav-number">1.</span> <span class="nav-text">概览</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#适合的场景"><span class="nav-number">2.</span> <span class="nav-text">适合的场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#架构"><span class="nav-number">3.</span> <span class="nav-text">架构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Data-Centers-and-Racks"><span class="nav-number">3.1.</span> <span class="nav-text">Data Centers and Racks</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Rack"><span class="nav-number">3.1.1.</span> <span class="nav-text">Rack</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Center"><span class="nav-number">3.1.2.</span> <span class="nav-text">Data Center</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Gossip-and-Failure-Detection"><span class="nav-number">3.2.</span> <span class="nav-text">Gossip and Failure Detection</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Gossip-的优点"><span class="nav-number">3.2.1.</span> <span class="nav-text">Gossip 的优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Gossip-的缺陷"><span class="nav-number">3.2.2.</span> <span class="nav-text">Gossip 的缺陷</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Snitches"><span class="nav-number">3.3.</span> <span class="nav-text">Snitches</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Rings-and-Tokens"><span class="nav-number">3.4.</span> <span class="nav-text">Rings and Tokens</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#token"><span class="nav-number">3.4.1.</span> <span class="nav-text">token</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Virtual-Nodes"><span class="nav-number">3.5.</span> <span class="nav-text">Virtual Nodes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Partitioners"><span class="nav-number">3.6.</span> <span class="nav-text">Partitioners</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Replication-Strategies"><span class="nav-number">3.7.</span> <span class="nav-text">Replication Strategies</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Consistency-Levels"><span class="nav-number">3.8.</span> <span class="nav-text">Consistency Levels</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Queries-and-Coordinator-Nodes"><span class="nav-number">3.9.</span> <span class="nav-text">Queries and Coordinator Nodes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Memtables-SSTables-and-Commit-Log"><span class="nav-number">3.10.</span> <span class="nav-text">Memtables, SSTables, and Commit Log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Caching"><span class="nav-number">3.11.</span> <span class="nav-text">Caching</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hinted-Hando"><span class="nav-number">3.12.</span> <span class="nav-text">Hinted Hando</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概览"><span class="nav-number">1.</span> <span class="nav-text">概览</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#适合的场景"><span class="nav-number">2.</span> <span class="nav-text">适合的场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#架构"><span class="nav-number">3.</span> <span class="nav-text">架构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#关键词"><span class="nav-number">3.1.</span> <span class="nav-text">关键词</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Data-Centers-and-Racks"><span class="nav-number">3.2.</span> <span class="nav-text">Data Centers and Racks</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Rack"><span class="nav-number">3.2.1.</span> <span class="nav-text">Rack</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Center"><span class="nav-number">3.2.2.</span> <span class="nav-text">Data Center</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Gossip-and-Failure-Detection"><span class="nav-number">3.3.</span> <span class="nav-text">Gossip and Failure Detection</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Gossip-的优点"><span class="nav-number">3.3.1.</span> <span class="nav-text">Gossip 的优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Gossip-的缺陷"><span class="nav-number">3.3.2.</span> <span class="nav-text">Gossip 的缺陷</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Snitches"><span class="nav-number">3.4.</span> <span class="nav-text">Snitches</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Rings-and-Tokens"><span class="nav-number">3.5.</span> <span class="nav-text">Rings and Tokens</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#token"><span class="nav-number">3.5.1.</span> <span class="nav-text">token</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Virtual-Nodes"><span class="nav-number">3.6.</span> <span class="nav-text">Virtual Nodes</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Rings-Without-Virtual-Nodes"><span class="nav-number">3.6.1.</span> <span class="nav-text">Rings Without Virtual Nodes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Rings-With-Virtual-Nodes"><span class="nav-number">3.6.2.</span> <span class="nav-text">Rings With Virtual Nodes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#The-Benefit-of-Using-Rings-with-virtual-nodes"><span class="nav-number">3.6.3.</span> <span class="nav-text">The Benefit of Using Rings with virtual nodes</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Partitioners"><span class="nav-number">3.7.</span> <span class="nav-text">Partitioners</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Replication-Strategies"><span class="nav-number">3.8.</span> <span class="nav-text">Replication Strategies</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Consistency-Levels"><span class="nav-number">3.9.</span> <span class="nav-text">Consistency Levels</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Queries-and-Coordinator-Nodes"><span class="nav-number">3.10.</span> <span class="nav-text">Queries and Coordinator Nodes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Memtables-SSTables-and-Commit-Log"><span class="nav-number">3.11.</span> <span class="nav-text">Memtables, SSTables, and Commit Log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Caching"><span class="nav-number">3.12.</span> <span class="nav-text">Caching</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hinted-Hando"><span class="nav-number">3.13.</span> <span class="nav-text">Hinted Hando</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基本流程"><span class="nav-number">4.</span> <span class="nav-text">基本流程</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -524,12 +569,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">56k</span>
+    <span title="站点总字数">58k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">51 分钟</span>
+    <span title="站点阅读时长">53 分钟</span>
 </div>
 
         
