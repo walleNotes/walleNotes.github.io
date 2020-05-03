@@ -34,7 +34,7 @@
 <meta property="og:image" content="https://github.com/2020/04/25/%E6%95%B0%E6%8D%AE%E5%BA%93/Cassandra/Cassandra-004/nodeinfo.png">
 <meta property="og:image" content="https://github.com/2020/04/25/%E6%95%B0%E6%8D%AE%E5%BA%93/Cassandra/Cassandra-004/flow.png">
 <meta property="article:published_time" content="2020-04-25T02:31:09.000Z">
-<meta property="article:modified_time" content="2020-04-26T15:06:18.450Z">
+<meta property="article:modified_time" content="2020-05-03T11:31:24.452Z">
 <meta property="article:author" content="Eter">
 <meta property="article:tag" content="Cassandra">
 <meta property="article:tag" content="NoSQL">
@@ -349,7 +349,7 @@
           </div>
 
 <h2 id="Partitioners"><a href="#Partitioners" class="headerlink" title="Partitioners"></a>Partitioners</h2><p><code>partitioners</code> 决定数据存放在哪个 <code>vnode</code> 上。它是一个 <code>hash</code> 函数，计算每行的  <code>partition key</code> 的 <code>hash</code> 值。<br>代码在 <code>org.apache.cassandra.dht</code> 包里,目前主要用 <code>Murmur3Partitioner</code><br><code>DHT</code>即为<code>distributed hash table</code>。</p>
-<h2 id="Replication-Strategies"><a href="#Replication-Strategies" class="headerlink" title="Replication Strategies"></a>Replication Strategies</h2><p>第一份复制存在对应 ``vnode<code>中。其他复制的存放位置由</code>replica strategy<code>(或叫</code>replica placement strategy`)决定。</p>
+<h2 id="Replication-Strategies"><a href="#Replication-Strategies" class="headerlink" title="Replication Strategies"></a>Replication Strategies</h2><p>第一份复制存在对应 <code>vnode</code> 中。其他复制的存放位置由 <code>replica strategy</code> (或叫<code>replica placement strategy</code>)决定。</p>
 <p>主要有两种策略：</p>
 <ul>
 <li><p>SimpleStrategy<br>将副本放置在环上的连续节点处，从分区器指示的节点开始。</p>
